@@ -5,6 +5,7 @@ module System.Log.Reader
   -- * Utilities
   , logMessageParser
   , FormatString
+  , zonedTimeParser
   ) where
 
 import Prelude hiding (takeWhile)
@@ -16,6 +17,8 @@ import Data.Foldable
 import System.Log
 import Data.Time
 import Data.Char (isAlpha)
+import Data.Monoid
+import System.Locale (defaultTimeLocale)
 
 type FormatString = T.Text
 
@@ -147,3 +150,25 @@ parseLogs
 parseLogs format loggerNameParser zonedTimeParser logs = do
   parser <- logMessageParser format loggerNameParser zonedTimeParser
   eitherResult $ parse (sepBy' parser endOfLine) logs
+
+-- | Parse time format string @ "%F %X %Z" @ with 'defaultTimeLocale'.
+zonedTimeParser :: Parser ZonedTime
+zonedTimeParser = do
+  date <- takeWhile (inClass "-0-9")
+  skipSpace
+  time <- takeWhile (inClass ":0-9")
+  skipSpace
+  tzName <- takeWhile isAlpha
+  let
+    str
+      = date `space` time `space` tzName
+        
+  case parseTime defaultTimeLocale "%F %X %Z" (T.unpack str) of
+    Nothing ->
+      fail "zonedTimeParse: failed to parse ZonedTime"
+    Just zt ->
+      return zt
+  where
+    space a b
+      = a <> " " <> b
+    
