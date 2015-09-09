@@ -1,11 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module System.Log.Reader
-  ( parseLogs
+  ( LogMessage (..)
+  , FormatString
+  , parseLogs
   , tfParseLogs
     -- * Utilities
   , logMessageParser
-  , FormatString
   , zonedTimeParser
   ) where
 
