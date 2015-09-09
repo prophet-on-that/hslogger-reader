@@ -1,15 +1,21 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module System.Log.Reader
-  ( logMessageParser
+  ( parseLogs
+  -- * Utilities
+  , logMessageParser
+  , FormatString
   ) where
 
 import Data.Attoparsec.Text.Lazy 
 import qualified Data.Text as T
+import qualified Data.Text.Lazy as L
 import Control.Applicative
 import Data.Foldable
 import System.Log
 import Data.Time
+
+type FormatString = T.Text
 
 data LogMessage = LogMessage
   { message :: !(Maybe T.Text)
@@ -152,13 +158,24 @@ buildParser loggerNameParser zonedTimeParser
         time''
           = zonedTimeToUTC time'
       return $ lm { timeUTC = Just time'' }
-      
+
+-- | Build a parser for a 'LogMessage' from a format string, as
+-- described by the hslogger package. 
 logMessageParser
-  :: T.Text -- ^ Logging format string
+  :: FormatString
   -> Parser T.Text -- ^ LoggerName parser
   -> Parser ZonedTime -- ^ Time parser
   -> Either String (Parser LogMessage)
 logMessageParser format loggerNameParser zonedTimeParser = do
   instrs <- parseOnly (formatStringParser <* endOfInput) format
   return $ buildParser loggerNameParser zonedTimeParser instrs
-  
+
+parseLogs
+  :: FormatString
+  -> Parser T.Text -- ^ LoggerName parser
+  -> Parser ZonedTime -- ^ Time parser
+  -> L.Text 
+  -> Either String [LogMessage]
+parseLogs format loggerNameParser zonedTimeParser logs = do
+  parser <- logMessageParser format loggerNameParser zonedTimeParser
+  eitherResult $ parse (sepBy' parser endOfLine) logs
