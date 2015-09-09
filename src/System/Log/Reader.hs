@@ -29,14 +29,12 @@ data LogMessage = LogMessage
   , priority :: !(Maybe Priority)
   , threadId :: !(Maybe Int)
   , processId :: !(Maybe Int)
-  , time :: !(Maybe ZonedTime)
-  , timeUTC :: !(Maybe UTCTime)
+  , timestamp :: !(Maybe ZonedTime)
   } deriving (Show)
 
 logMessage :: LogMessage
 logMessage
   = LogMessage
-      Nothing
       Nothing
       Nothing
       Nothing
@@ -122,13 +120,10 @@ buildParser loggerNameParser zonedTimeParser
       return $ lm { processId = Just pid }
     helper lm Time = do
       time' <- zonedTimeParser
-      return $ lm { time = Just time' }
+      return $ lm { timestamp = Just time' }
     helper lm TimeUTC = do
       time' <- zonedTimeParser
-      let
-        time''
-          = zonedTimeToUTC time'
-      return $ lm { timeUTC = Just time'' }
+      return $ lm { timestamp = Just time' }
 
 -- | Build a parser for a 'LogMessage' from a format string, as
 -- described by the hslogger package. 
