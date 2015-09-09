@@ -1,0 +1,24 @@
+name:                hslogger-reader
+version:             0.1.0.0
+synopsis:            Reading hslogger-produced logs.
+license:             BSD3
+license-file:        LICENSE
+author:              Alex Bates
+maintainer:          ard.bates@gmail.com
+build-type:          Simple
+cabal-version:       >=1.10
+
+library 
+  exposed-modules:
+      System.Log.Reader
+  hs-source-dirs:      
+    src
+  default-language:    
+    Haskell2010
+  build-depends:       
+      base >= 4.7 && < 5
+    , attoparsec == 0.12.*
+    , text == 1.2.*
+    , hslogger == 1.2.*
+    , time == 1.4.*
+  ghc-options: -Wall -fno-warn-unused-do-bind
