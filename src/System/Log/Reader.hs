@@ -155,7 +155,7 @@ tfParseLogs
   -> Either String [LogMessage]
 tfParseLogs zonedTimeParser loggerNameParser format logs = do
   parser <- logMessageParser format loggerNameParser zonedTimeParser
-  eitherResult $ parse (sepBy' parser endOfLine) logs
+  eitherResult $ parse (sepBy parser endOfLine) logs
 
 -- | Parse time format string @ "%F %X %Z" @ with 'defaultTimeLocale'.
 zonedTimeParser :: Parser ZonedTime
