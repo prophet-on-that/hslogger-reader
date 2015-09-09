@@ -7,6 +7,7 @@ module System.Log.Reader
   , FormatString
   ) where
 
+import Prelude hiding (takeWhile)
 import Data.Attoparsec.Text.Lazy 
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as L
@@ -14,6 +15,7 @@ import Control.Applicative
 import Data.Foldable
 import System.Log
 import Data.Time
+import Data.Char (isAlpha)
 
 type FormatString = T.Text
 
@@ -52,63 +54,28 @@ data Instruction
 formatStringParser :: Parser [Instruction]
 formatStringParser
   = handleEOI <|> do
-      instruction <- handleNoise <|>
-                     handleMessage <|>
-                     handleLoggerName <|>
-                     handlePriority <|>
-                     handleThreadId <|>
-                     handleProcessId <|>
-                     handleTime <|> 
-                     handleTimeUTC <|>
-                     fail "Saw unsupported formatter, use one of msg, loggername, prio, tid, pid, time, utcTime"
-      (instruction :) <$> formatStringParser
+      instr <- handleNoise <|> do
+        char '$'
+        instr <- takeWhile isAlpha
+        case instr of
+          "msg" -> return Message
+          "loggername" -> return LoggerName
+          "prio" -> return Priority
+          "tid" -> return ThreadId
+          "pid" -> return ProcessId
+          "time" -> return Time
+          "utcTime" -> return TimeUTC
+          str -> fail $ "Formatter `" ++ T.unpack str ++ "' is unsupported, use one of $msg, $loggername, $prio, $tid, $pid, $time, $utcTime"
+      (instr :) <$> formatStringParser
   where
     handleEOI :: Parser [Instruction]
     handleEOI = do
       endOfInput
       return []
 
-    formatChar
-      = '$'
-      
     handleNoise = do
-      noise <- takeWhile1 (/= formatChar)
+      noise <- takeWhile1 (/= '$')
       return $ Noise noise
-
-    handleMessage = do
-      char formatChar
-      "msg"
-      return Message
-
-    handleLoggerName = do
-      char formatChar
-      "loggername"
-      return LoggerName
-
-    handlePriority = do
-      char formatChar
-      "prio"
-      return Priority
-
-    handleThreadId = do
-      char formatChar
-      "tid"
-      return ThreadId
-
-    handleProcessId = do
-      char formatChar
-      "pid"
-      return ProcessId
-
-    handleTime = do
-      char formatChar
-      "time"
-      return Time
-
-    handleTimeUTC = do
-      char formatChar
-      "utcTime"
-      return TimeUTC
 
 buildParser
   :: Parser T.Text -- ^ LoggerName parser
@@ -170,6 +137,7 @@ logMessageParser format loggerNameParser zonedTimeParser = do
   instrs <- parseOnly (formatStringParser <* endOfInput) format
   return $ buildParser loggerNameParser zonedTimeParser instrs
 
+-- | Parse newline-separated log messages, as outputted by hslogger. 
 parseLogs
   :: FormatString
   -> Parser T.Text -- ^ LoggerName parser
