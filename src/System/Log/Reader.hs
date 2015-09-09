@@ -2,7 +2,8 @@
 
 module System.Log.Reader
   ( parseLogs
-  -- * Utilities
+  , tfParseLogs
+    -- * Utilities
   , logMessageParser
   , FormatString
   , zonedTimeParser
@@ -142,12 +143,22 @@ logMessageParser format loggerNameParser zonedTimeParser = do
 
 -- | Parse newline-separated log messages, as outputted by hslogger. 
 parseLogs
-  :: FormatString
-  -> Parser T.Text -- ^ LoggerName parser
-  -> Parser ZonedTime -- ^ Time parser
+  :: Parser T.Text -- ^ LoggerName parser
+  -> FormatString
   -> L.Text 
   -> Either String [LogMessage]
-parseLogs format loggerNameParser zonedTimeParser logs = do
+parseLogs 
+  = tfParseLogs zonedTimeParser
+
+-- | As 'parseLogs', but specify time parser (for compatibility with
+-- 'tfLogFormatter').
+tfParseLogs
+  :: Parser ZonedTime -- ^ Time parser
+  -> Parser T.Text -- ^ LoggerName parser
+  -> FormatString
+  -> L.Text 
+  -> Either String [LogMessage]
+tfParseLogs zonedTimeParser loggerNameParser format logs = do
   parser <- logMessageParser format loggerNameParser zonedTimeParser
   eitherResult $ parse (sepBy' parser endOfLine) logs
 
