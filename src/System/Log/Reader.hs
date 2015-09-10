@@ -1,3 +1,15 @@
+-- | Generate a parser for logs produced by the
+-- <http://hackage.haskell.org/package/hslogger hslogger> package,
+-- supporting arbitrary formatting strings (see
+-- "System.Log.Formatter"). Currently, this package does provide
+-- support for custom-defined formatters.
+--
+-- 'logMessageParser' will generate a parser for a 'LogMessage' given
+-- a format string (such @ "[$utcTime $loggername $prio] $msg" @) and
+-- a parser for your logger names. This can then be used to read logs
+-- line-by-line, potentially in constant memory, from disk. See the
+-- accompanying executable for an example of this.
+
 {-# LANGUAGE OverloadedStrings #-}
 
 module System.Log.Reader
@@ -125,7 +137,7 @@ logMessageParser format loggerNameParser
 
 -- | As 'logMessageParser', but provide a custom time format for
 -- parsing @ "$time" @ and @ "$utcTime" @ formatters. Compatible with
--- hslogger's tfLogFormatter function.
+-- hslogger's /tfLogFormatter/ function.
 tfLogMessageParser
   :: FormatString
   -> Parser T.Text -- ^ LoggerName parser

@@ -1,6 +1,12 @@
 name:                hslogger-reader
 version:             1.0.0
 synopsis:            Parsing hslogger-produced logs.
+description:         
+  hslogger-reader provides a function to generate a parser for
+  <http://hackage.haskell.org/package/hslogger hslogger>-produced logs
+  from a hslogger format string (see "System.Log.Formatter"). The
+  accompanying executable demonstrates parsing and computing with a
+  log file in constant memory.
 license:             BSD3
 license-file:        LICENSE
 author:              Alex Bates
