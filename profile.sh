@@ -12,7 +12,7 @@ function run {
     echo "Beginning $2 run"
 
     set -x
-    stack exec profiling -- +RTS $1 -p -sprofiling.gc -RTS > profiling.output
+    stack exec profiling -- example.log '[$utcTime $loggername $prio] $msg' +RTS $1 -p -sprofiling.gc -RTS > profiling.output
 
     hp2ps -c profiling.hp
 
