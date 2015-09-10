@@ -3,8 +3,8 @@
 module System.Log.Reader
   ( LogMessage (..)
   , FormatString
-  , parseLogs
-  , tfParseLogs
+  , parseLog
+  , tfParseLog
     -- * Utilities
   , logMessageParser
   , zonedTimeParser
@@ -137,26 +137,26 @@ logMessageParser format loggerNameParser zonedTimeParser = do
   instrs <- parseOnly (formatStringParser <* endOfInput) format
   return $ buildParser loggerNameParser zonedTimeParser instrs
 
--- | Parse newline-separated log messages, as outputted by hslogger. 
-parseLogs
+-- | Parse a log message, as outputted by hslogger. 
+parseLog
   :: Parser T.Text -- ^ LoggerName parser
   -> FormatString
   -> L.Text 
-  -> Either String [LogMessage]
-parseLogs 
-  = tfParseLogs zonedTimeParser
+  -> Either String LogMessage
+parseLog 
+  = tfParseLog zonedTimeParser
 
--- | As 'parseLogs', but specify time parser (for compatibility with
+-- | As 'parseLog', but specify time parser (for compatibility with
 -- 'tfLogFormatter').
-tfParseLogs
+tfParseLog
   :: Parser ZonedTime -- ^ Time parser
   -> Parser T.Text -- ^ LoggerName parser
   -> FormatString
   -> L.Text 
-  -> Either String [LogMessage]
-tfParseLogs zonedTimeParser loggerNameParser format logs = do
+  -> Either String LogMessage
+tfParseLog zonedTimeParser loggerNameParser format log = do
   parser <- logMessageParser format loggerNameParser zonedTimeParser
-  eitherResult $ parse (sepBy parser endOfLine) logs
+  eitherResult $ parse parser log
 
 -- | Parse time format string @ "%F %X %Z" @ with 'defaultTimeLocale'.
 zonedTimeParser :: Parser ZonedTime
