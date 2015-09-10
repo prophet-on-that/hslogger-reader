@@ -25,12 +25,12 @@ import System.Locale (defaultTimeLocale)
 type FormatString = T.Text
 
 data LogMessage = LogMessage
-  { message :: !(Maybe T.Text)
-  , loggerName :: !(Maybe T.Text)
-  , priority :: !(Maybe Priority)
-  , threadId :: !(Maybe Int)
-  , processId :: !(Maybe Int)
-  , timestamp :: !(Maybe ZonedTime)
+  { message :: Maybe T.Text
+  , loggerName :: Maybe T.Text
+  , priority :: Maybe Priority
+  , threadId :: Maybe Int
+  , processId :: Maybe Int
+  , timestamp :: Maybe ZonedTime
   } deriving (Show)
 
 logMessage :: LogMessage
