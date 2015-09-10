@@ -12,6 +12,8 @@ license-file:        LICENSE
 author:              Alex Bates
 maintainer:          ard.bates@gmail.com
 build-type:          Simple
+homepage:            http://github.com/prophet-on-that/hslogger-reader
+bug-reports:         http://github.com/prophet-on-that/hslogger-reader/issues
 cabal-version:       >=1.10
 category: Interfaces, Parsing
 
