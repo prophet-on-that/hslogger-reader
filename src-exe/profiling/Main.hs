@@ -1,3 +1,6 @@
+-- | Compute number of lines and maximum message length for given log
+-- file and format.
+
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE BangPatterns #-}
 
@@ -11,12 +14,15 @@ import qualified Data.Text.Lazy.IO as L
 import Data.Attoparsec.Text.Lazy
 import Data.Foldable
 import Data.Maybe
+import System.Exit
+import System.Environment
 
 main = do
-  lts <- fmap L.lines $ L.readFile "example.log"
+  (fileName, format) <- handleArgs
+  lts <- fmap L.lines $ L.readFile fileName
   let
     result = do
-      parser <- logMessageParser "[$utcTime $loggername $prio] $msg" loggerNameParser
+      parser <- logMessageParser format loggerNameParser
       let
         f (!lineCount, !maxMsgLength) lt = do
           lm <- eitherResult . parse parser $ lt
@@ -35,3 +41,15 @@ main = do
   where
     loggerNameParser
       = takeTill isHorizontalSpace
+
+    handleArgs :: IO (FilePath, T.Text)
+    handleArgs = do
+      args <- getArgs
+      case args of
+        [fileName, format] ->
+          return (fileName, T.pack format)
+        _ -> do
+          name <- getProgName
+          putStrLn $ "Usage: " ++ name ++ " format_string path/to/log/file"
+          exitFailure
+         
