@@ -1,12 +1,13 @@
 name:                hslogger-reader
-version:             0.1.0.0
-synopsis:            Reading hslogger-produced logs.
+version:             1.0.0
+synopsis:            Parsing hslogger-produced logs.
 license:             BSD3
 license-file:        LICENSE
 author:              Alex Bates
 maintainer:          ard.bates@gmail.com
 build-type:          Simple
 cabal-version:       >=1.10
+category: Interfaces, Parsing
 
 library 
   exposed-modules:
