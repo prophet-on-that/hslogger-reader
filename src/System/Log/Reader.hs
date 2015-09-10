@@ -4,6 +4,7 @@ module System.Log.Reader
   ( LogMessage (..)
   , FormatString
   , logMessageParser
+  , tfLogMessageParser
     -- * Extras
   , zonedTimeParser
   ) where
