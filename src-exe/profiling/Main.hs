@@ -16,7 +16,7 @@ main = do
   lts <- fmap L.lines $ L.readFile "example.log"
   let
     result = do
-      parser <- logMessageParser "[$utcTime $loggername $prio] $msg" loggerNameParser zonedTimeParser
+      parser <- logMessageParser "[$utcTime $loggername $prio] $msg" loggerNameParser
       let
         f (!lineCount, !maxMsgLength) lt = do
           lm <- eitherResult . parse parser $ lt

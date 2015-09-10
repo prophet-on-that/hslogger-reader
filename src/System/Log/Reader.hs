@@ -4,6 +4,7 @@ module System.Log.Reader
   ( LogMessage (..)
   , FormatString
   , logMessageParser
+    -- * Extras
   , zonedTimeParser
   ) where
 
@@ -113,13 +114,23 @@ buildParser loggerNameParser zonedTimeParser
       return $ lm { timestamp = Just time' }
 
 -- | Build a parser for a 'LogMessage' from a format string, as
--- described by the hslogger package. 
+-- described by the hslogger package.
 logMessageParser
+  :: FormatString
+  -> Parser T.Text -- ^ LoggerName parser
+  -> Either String (Parser LogMessage)
+logMessageParser format loggerNameParser
+  = tfLogMessageParser format loggerNameParser zonedTimeParser
+
+-- | As 'logMessageParser', but provide a custom time format for
+-- parsing @ "$time" @ and @ "$utcTime" @ formatters. Compatible with
+-- hslogger's tfLogFormatter function.
+tfLogMessageParser
   :: FormatString
   -> Parser T.Text -- ^ LoggerName parser
   -> Parser ZonedTime -- ^ Time parser
   -> Either String (Parser LogMessage)
-logMessageParser format loggerNameParser zonedTimeParser = do
+tfLogMessageParser format loggerNameParser zonedTimeParser = do
   instrs <- parseOnly (formatStringParser <* endOfInput) format
   return $ buildParser loggerNameParser zonedTimeParser instrs
 
