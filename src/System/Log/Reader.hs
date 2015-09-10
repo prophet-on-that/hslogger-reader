@@ -3,9 +3,6 @@
 module System.Log.Reader
   ( LogMessage (..)
   , FormatString
-  , parseLog
-  , tfParseLog
-    -- * Utilities
   , logMessageParser
   , zonedTimeParser
   ) where
@@ -13,7 +10,6 @@ module System.Log.Reader
 import Prelude hiding (takeWhile)
 import Data.Attoparsec.Text.Lazy 
 import qualified Data.Text as T
-import qualified Data.Text.Lazy as L
 import Control.Applicative
 import Data.Foldable
 import System.Log
@@ -32,16 +28,6 @@ data LogMessage = LogMessage
   , processId :: Maybe Int
   , timestamp :: Maybe ZonedTime
   } deriving (Show)
-
-logMessage :: LogMessage
-logMessage
-  = LogMessage
-      Nothing
-      Nothing
-      Nothing
-      Nothing
-      Nothing
-      Nothing
 
 data Instruction
   = Noise T.Text
@@ -86,7 +72,7 @@ buildParser
   -> [Instruction]
   -> Parser LogMessage
 buildParser loggerNameParser zonedTimeParser
-  = foldlM helper logMessage
+  = foldlM helper $ LogMessage Nothing Nothing Nothing Nothing Nothing Nothing 
   where
     helper :: LogMessage -> Instruction -> Parser LogMessage
     helper lm (Noise noise) = do
@@ -136,27 +122,6 @@ logMessageParser
 logMessageParser format loggerNameParser zonedTimeParser = do
   instrs <- parseOnly (formatStringParser <* endOfInput) format
   return $ buildParser loggerNameParser zonedTimeParser instrs
-
--- | Parse a log message, as outputted by hslogger. 
-parseLog
-  :: Parser T.Text -- ^ LoggerName parser
-  -> FormatString
-  -> L.Text 
-  -> Either String LogMessage
-parseLog 
-  = tfParseLog zonedTimeParser
-
--- | As 'parseLog', but specify time parser (for compatibility with
--- 'tfLogFormatter').
-tfParseLog
-  :: Parser ZonedTime -- ^ Time parser
-  -> Parser T.Text -- ^ LoggerName parser
-  -> FormatString
-  -> L.Text 
-  -> Either String LogMessage
-tfParseLog zonedTimeParser loggerNameParser format log = do
-  parser <- logMessageParser format loggerNameParser zonedTimeParser
-  eitherResult $ parse parser log
 
 -- | Parse time format string @ "%F %X %Z" @ with 'defaultTimeLocale'.
 zonedTimeParser :: Parser ZonedTime
