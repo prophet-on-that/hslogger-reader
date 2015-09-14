@@ -7,7 +7,6 @@ module Arguments
 
 import Options.Applicative
 import Data.Time
-import Data.Monoid
 import System.Log.Logger
 import qualified Data.Text as T
 
@@ -16,11 +15,12 @@ data Arguments = Arguments
   , upperTime :: Maybe UTCTime
   , lowerPrio :: Priority
   , upperPrio :: Priority
-  , outfile :: Maybe FilePath
-  , logfile :: FilePath
   , insensitive :: Bool
-  , pattern :: Maybe String
+  , pattern :: Maybe T.Text
   , format :: T.Text
+  , pid :: Maybe Int
+  , tid :: Maybe Int
+  , logFile :: FilePath
   }
 
 parseArgs :: Parser Arguments
@@ -58,22 +58,13 @@ parseArgs
              <> help "Assert a maximum message priority."
               )
           )
-      <*> ( optional . option auto $
-              ( short 'o'
-             <> long "output-file"
-             <> metavar "FILE"
-             <> help "Write filtered messages to given file."
-              )
-          )
-      <*> ( argument auto $ metavar "FILE"
-          )
       <*> ( switch $
               ( short 'i'
              <> long "insensitive"
              <> help "Ignore case when matching message pattern."
               )
           )
-      <*> ( optional . strOption $
+      <*> ( optional . option auto $
               ( short 'p'
              <> long "pattern"
              <> metavar "REGEXP"
@@ -88,6 +79,20 @@ parseArgs
              <> metavar "FORMAT"
              <> help "Specify hslogger-style format of log files."
               )
+          )
+      <*> ( option auto $
+              ( long "process-id"
+             <> metavar "PID"
+             <> help "Assert logging process."
+              )
+          )
+      <*> ( option auto $
+              ( long "thread-id"
+             <> metavar "TID"
+             <> help "Assert logging thread."
+              )
+          )
+      <*> ( argument auto $ metavar "FILE"
           )
 
 opts
