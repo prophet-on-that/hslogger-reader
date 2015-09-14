@@ -75,7 +75,10 @@ filterLogMessage lowerPrio upperPrio lTime uTime pid tid reg lm
       , liftA2 (>=) uTime $ zonedTimeToUTC <$> timestamp lm
       , liftA2 (==) pid $ processId lm
       , liftA2 (==) tid $ threadId lm
-      , liftA2 find reg (message lm) >> return True
+      , do
+          reg' <- reg
+          name <- loggerName lm
+          return . fromMaybe False $ find reg' name >> return True
       ]
 
 data Errors

@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Arguments
   ( Arguments (..)
   , opts
@@ -9,6 +7,8 @@ import Options.Applicative
 import Data.Time
 import System.Log.Logger
 import qualified Data.Text as T
+import System.Locale (defaultTimeLocale)
+import Data.Maybe
 
 data Arguments = Arguments
   { lowerTime :: Maybe UTCTime
@@ -26,14 +26,14 @@ data Arguments = Arguments
 parseArgs :: Parser Arguments
 parseArgs
   = Arguments
-      <$> ( optional . option auto $
+      <$> ( optional . fmap parseUTCTime . strOption $
               ( short 'l'
              <> long "lower-time"
              <> metavar "UTCTIME"
              <> help "Ignore messages logged before this time."
               )
           )
-      <*> ( optional . option auto $
+      <*> ( optional . fmap parseUTCTime . strOption $
               ( short 'u'
              <> long "upper-time"
              <> metavar "UTCTIME"
@@ -64,14 +64,14 @@ parseArgs
              <> help "Ignore case when matching message pattern."
               )
           )
-      <*> ( optional . option auto $
+      <*> ( optional . fmap T.pack . strOption $
               ( short 'p'
              <> long "pattern"
              <> metavar "REGEXP"
-             <> help "Assert a pattern the message must satisfy."
+             <> help "Assert a pattern the logger name must satisfy."
               )
           )
-      <*> ( option auto $
+      <*> ( fmap T.pack . strOption $
               ( short 'f'
              <> long "format"
              <> value "[$utcTime $loggername $prio] $msg"
@@ -80,19 +80,19 @@ parseArgs
              <> help "Specify hslogger-style format of log files."
               )
           )
-      <*> ( option auto $
+      <*> ( optional . option auto $
               ( long "process-id"
              <> metavar "PID"
              <> help "Assert logging process."
               )
           )
-      <*> ( option auto $
+      <*> ( optional . option auto $
               ( long "thread-id"
              <> metavar "TID"
              <> help "Assert logging thread."
               )
           )
-      <*> ( argument auto $ metavar "FILE"
+      <*> ( strArgument $ metavar "FILE"
           )
 
 opts
@@ -101,4 +101,6 @@ opts
      <> progDesc "Filter hslogger-produced log files."
       )
 
-      
+parseUTCTime :: String -> UTCTime
+parseUTCTime
+  = fromMaybe (error "Cannot parse date (expected format `yyyy-mm-ddThh:mm:ssZ'") . parseTime defaultTimeLocale "%FT%TZ"
