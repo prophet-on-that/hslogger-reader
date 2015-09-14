@@ -1,3 +1,7 @@
+-- | Filter hslogger-produced logs and print to standard
+-- output. Requires logs to use default hslogger time format and for
+-- logger names to not include whitespace.
+
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 

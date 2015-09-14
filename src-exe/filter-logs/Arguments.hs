@@ -97,8 +97,9 @@ parseArgs
 
 opts
   = info (helper <*> parseArgs)
-      ( fullDesc
-     <> progDesc "Filter hslogger-produced log files."
+      ( header "Filter hslogger-produced log files."
+     <> fullDesc
+     <> footer "Limitations: logs must use hslogger's default time format `yyyy-mm-ddThh:mm:ssZ' and logger names must not include whitespace."
       )
 
 parseUTCTime :: String -> UTCTime
