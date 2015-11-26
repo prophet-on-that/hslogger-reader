@@ -1,7 +1,7 @@
 -- | Generate a parser for logs produced by the
 -- <http://hackage.haskell.org/package/hslogger hslogger> package,
 -- supporting arbitrary formatting strings (see
--- "System.Log.Formatter"). Currently, this package does provide
+-- "System.Log.Formatter"). Currently, this package does not provide
 -- support for custom-defined formatters.
 --
 -- 'logMessageParser' will generate a parser for a 'LogMessage' given
