@@ -11,6 +11,7 @@
 -- accompanying executable for an example of this.
 
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE CPP #-}
 
 module System.Log.Reader
   ( LogMessage (..)

@@ -42,7 +42,6 @@ library
     build-depends: 
         time == 1.5.*
   ghc-options: -W
-  extensions: CPP
 
 executable profiling
   hs-source-dirs: src-exe/profiling
@@ -79,5 +78,4 @@ executable filter-logs
     build-depends: 
         time == 1.5.*
   ghc-options: -W
-  extensions: CPP
 
