@@ -27,10 +27,13 @@ import qualified Data.Text as T
 import Control.Applicative
 import Data.Foldable
 import System.Log
-import Data.Time
 import Data.Char (isAlpha)
 import Data.Monoid
+import Data.Time
+#if MIN_VERSION_time(1,5,0)
+#else
 import System.Locale (defaultTimeLocale)
+#endif
 
 type FormatString = T.Text
 
@@ -158,8 +161,12 @@ zonedTimeParser = do
   let
     str
       = date `space` time `space` tzName
-        
+
+#if MIN_VERSION_time (1,5,0)        
+  case parseTimeM True defaultTimeLocale "%F %X %Z" (T.unpack str) of
+#else  
   case parseTime defaultTimeLocale "%F %X %Z" (T.unpack str) of
+#endif
     Nothing ->
       fail "zonedTimeParse: failed to parse ZonedTime"
     Just zt ->

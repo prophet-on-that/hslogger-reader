@@ -4,11 +4,14 @@ module Arguments
   ) where
 
 import Options.Applicative
-import Data.Time
 import System.Log.Logger
 import qualified Data.Text as T
-import System.Locale (defaultTimeLocale)
 import Data.Maybe
+import Data.Time
+#if MIN_VERSION_time(1,5,0)
+#else
+import System.Locale (defaultTimeLocale)
+#endif
 
 data Arguments = Arguments
   { lowerTime :: Maybe UTCTime
@@ -104,4 +107,8 @@ opts
 
 parseUTCTime :: String -> UTCTime
 parseUTCTime
+#if MIN_VERSION_time(1,5,0)
+  = fromMaybe (error "Cannot parse date (expected format `yyyy-mm-ddThh:mm:ssZ'") . parseTimeM True defaultTimeLocale "%FT%TZ"
+#else
   = fromMaybe (error "Cannot parse date (expected format `yyyy-mm-ddThh:mm:ssZ'") . parseTime defaultTimeLocale "%FT%TZ"
+#endif
