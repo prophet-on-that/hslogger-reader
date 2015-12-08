@@ -1,5 +1,5 @@
 name:                hslogger-reader
-version:             1.0.0
+version:             1.0.1
 synopsis:            Parsing hslogger-produced logs.
 description:         
   hslogger-reader provides a function to generate a parser for
