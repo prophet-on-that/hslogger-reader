@@ -4,6 +4,7 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Main where
 
@@ -26,36 +27,27 @@ import Data.Typeable
 import Data.Monoid
 
 main = do
-  arguments <- execParser opts
-
-  regex'' <- case pattern arguments of
+  Arguments {..} <- execParser opts
+  regex'' <- case pattern of
     Nothing ->
       return Nothing
     Just pattern' -> do
       let
         regexOptions
-          = if insensitive arguments
+          = if insensitive 
               then
                 [CaseInsensitive]
               else
                 []
       either (throwIO . RegexError) (return . return) $ regex' regexOptions pattern'
-  messageParser <- either (throwIO . ParserError) return $ logMessageParser (format arguments) loggerNameParser
+  messageParser <- either (throwIO . ParserError) return $ logMessageParser format loggerNameParser
 
-  lts <- fmap L.lines . L.readFile . logFile $ arguments
+  lts <- fmap L.lines . L.readFile $ logFile
   forM lts $ \lt -> do
     lm <- either (const $ throwIO (MessageParseError lt)) return . eitherResult . parse messageParser $ lt
     let
       pred
-        = filterLogMessage
-            (lowerPrio arguments)
-            (upperPrio arguments)
-            (lowerTime arguments)
-            (upperTime arguments)
-            (pid arguments)
-            (tid arguments)
-            regex''
-            
+        = filterLogMessage lowerPrio upperPrio lowerTime upperTime pid tid regex''
     when (pred lm) $ L.putStrLn lt
   where
     loggerNameParser
