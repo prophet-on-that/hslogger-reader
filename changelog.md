@@ -1,7 +1,8 @@
 # 1.0.2 - 24-Oct-2016
 
 * Now skipping unparsable lines in `filter-logs` by default. Previous
-  behaviour may be recovered with --no-continue option.
+  behaviour may be recovered with --no-continue option;
+* Supporting GHC 8.0.1 and [lts-7.0](https://www.stackage.org/lts-7.0).
 
 # 1.0.1
 

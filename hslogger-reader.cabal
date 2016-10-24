@@ -31,7 +31,7 @@ library
     Haskell2010
   build-depends:       
       base >= 4.7 && < 5
-    , attoparsec == 0.12.*
+    , attoparsec >= 0.12 && < 0.14
     , text == 1.2.*
     , hslogger == 1.2.*
   if flag(old-locale)
@@ -40,7 +40,7 @@ library
       , old-locale
   else 
     build-depends: 
-        time == 1.5.*
+        time >= 1.5 && < 1.7
   ghc-options: -W
 
 executable profiling
@@ -70,13 +70,13 @@ executable filter-logs
     , attoparsec
     , hslogger
     , text-icu == 0.7.*
-    , optparse-applicative == 0.11.*
+    , optparse-applicative >= 0.11 && < 0.13
   if flag(old-locale)
     build-depends: 
         time == 1.4.*
       , old-locale
   else 
     build-depends: 
-        time == 1.5.*
+        time >= 1.5 && < 1.7
   ghc-options: -W
 
