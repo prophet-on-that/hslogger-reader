@@ -11,7 +11,6 @@ module Main
   ) where
 
 import Arguments
-
 import Options.Applicative (execParser)
 import Prelude hiding (takeWhile)
 import System.Log.Reader

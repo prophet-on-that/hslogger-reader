@@ -5,6 +5,8 @@ module Arguments
   , opts
   ) where
 
+import Paths_hslogger_reader (version)
+import Data.Version (showVersion)
 import Options.Applicative
 import System.Log.Logger
 import qualified Data.Text as T
@@ -108,8 +110,8 @@ parseArgs
 
 opts
   = info (helper <*> parseArgs)
-      ( header "Filter hslogger-produced log files."
-     <> progDesc "Unparsable lines will be skipped. This behaviour can be overridden with the --no-continue option."
+      ( header ("filter-logs version " <> showVersion version)
+     <> progDesc "Filter hslogger-produced log files. Unparsable lines will be skipped. This behaviour can be overridden with the --no-continue option."
      <> fullDesc
      <> footer "Limitations: logs must use hslogger's default time format `yyyy-mm-ddThh:mm:ssZ' and logger names must not include whitespace."
       )
