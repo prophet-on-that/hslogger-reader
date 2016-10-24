@@ -6,7 +6,9 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Main where
+module Main
+  ( main
+  ) where
 
 import Arguments
 
@@ -44,11 +46,13 @@ main = do
 
   lts <- fmap L.lines . L.readFile $ logFile
   forM lts $ \lt -> do
-    lm <- either (const $ throwIO (MessageParseError lt)) return . eitherResult . parse messageParser $ lt
-    let
-      pred
-        = filterLogMessage lowerPrio upperPrio lowerTime upperTime pid tid regex''
-    when (pred lm) $ L.putStrLn lt
+    case maybeResult $ parse messageParser lt of
+      Nothing ->
+        when noContinue $
+          throwIO $ MessageParseError lt
+      Just lm ->
+        when (filterLogMessage lowerPrio upperPrio lowerTime upperTime pid tid regex'' lm) $
+          L.putStrLn lt
   where
     loggerNameParser
       = takeTill isHorizontalSpace

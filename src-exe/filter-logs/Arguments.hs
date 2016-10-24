@@ -25,6 +25,7 @@ data Arguments = Arguments
   , format :: T.Text
   , pid :: Maybe Int
   , tid :: Maybe Int
+  , noContinue :: Bool
   , logFile :: FilePath
   }
 
@@ -97,12 +98,18 @@ parseArgs
              <> help "Assert logging thread."
               )
           )
+      <*> ( switch $
+              ( long "no-continue"
+             <> help "Do not skip unparsable lines, but fail with error message."
+              )
+          )
       <*> ( strArgument $ metavar "FILE"
           )
 
 opts
   = info (helper <*> parseArgs)
       ( header "Filter hslogger-produced log files."
+     <> progDesc "Unparsable lines will be skipped. This behaviour can be overridden with the --no-continue option."
      <> fullDesc
      <> footer "Limitations: logs must use hslogger's default time format `yyyy-mm-ddThh:mm:ssZ' and logger names must not include whitespace."
       )

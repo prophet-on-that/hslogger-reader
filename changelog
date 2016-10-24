@@ -1,3 +1,9 @@
+1.0.2
+-----
+
+* Now skipping unparsable lines in `filter-logs` by default. Previous
+  behaviour may be recovered with --no-continue option.
+
 1.0.1
 -----
 
