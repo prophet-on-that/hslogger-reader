@@ -26,6 +26,7 @@ import Control.Exception
 import Control.Monad
 import Data.Typeable
 import Data.Monoid
+import System.IO (stderr)
 
 main = do
   Arguments {..} <- execParser opts
@@ -46,9 +47,11 @@ main = do
   lts <- fmap L.lines . L.readFile $ logFile
   forM lts $ \lt -> do
     case maybeResult $ parse messageParser lt of
-      Nothing ->
+      Nothing -> do
         when noContinue $
           throwIO $ MessageParseError lt
+        when printUnparsable $
+          L.hPutStrLn stderr lt
       Just lm ->
         when (filterLogMessage lowerPrio upperPrio lowerTime upperTime pid tid regex'' lm) $
           L.putStrLn lt

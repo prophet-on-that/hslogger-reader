@@ -29,6 +29,7 @@ data Arguments = Arguments
   , tid :: Maybe Int
   , noContinue :: Bool
   , logFile :: FilePath
+  , printUnparsable :: Bool
   }
 
 parseArgs :: Parser Arguments
@@ -107,11 +108,16 @@ parseArgs
           )
       <*> ( strArgument $ metavar "FILE"
           )
+      <*> ( switch $
+              ( long "print-unparsable"
+             <> help "Print unparsable lines to stderr."
+              )
+          )
 
 opts
   = info (helper <*> parseArgs)
       ( header ("filter-logs version " <> showVersion version)
-     <> progDesc "Filter hslogger-produced log files. Unparsable lines will be skipped. This behaviour can be overridden with the --no-continue option."
+     <> progDesc "Filter hslogger-produced log files. Unparsable lines are skipped by default."
      <> fullDesc
      <> footer "Limitations: logs must use hslogger's default time format `yyyy-mm-ddThh:mm:ssZ' and logger names must not include whitespace."
       )
