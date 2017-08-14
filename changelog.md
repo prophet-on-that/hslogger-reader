@@ -1,3 +1,8 @@
+# 1.0.3 - 14-Aug-2017
+
+* Add --print-unparsable option in `filter-logs` to print unparsable
+  lines to stderr.
+
 # 1.0.2 - 24-Oct-2016
 
 * Now skipping unparsable lines in `filter-logs` by default. Previous
